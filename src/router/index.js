@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: () => import('../views/Home.vue') // 首页组件
+    component: () => import('../views/home/index.vue') // 首页组件
   },
   {
     path: '/:pathMatch(.*)*', // 匹配所有未定义的路由
