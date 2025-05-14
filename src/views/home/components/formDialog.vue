@@ -4,7 +4,7 @@
     :title="dialogType === 'add' ? '新增' : '编辑'"
     width="600px"
   >
-    <el-form ref="formRef" :model="formData" label-width="80px">
+    <el-form ref="formRef" :model="formData" label-width="80px" :rules="rules">
       <el-row :gutter="24">
         <el-col :span="12">
           <el-form-item label="股票名称" prop="stockName">
@@ -47,15 +47,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-
-      <el-form-item label="收益率" prop="profitRate">
-        <el-input-number
-          v-model="formData.profitRate"
-          :step="0.01"
-          :precision="2"
-          placeholder="请输入收益率"
-        />
-      </el-form-item>
 
       <el-form-item label="K线类型" prop="kLineType">
         <el-radio-group v-model="formData.kLineType">
@@ -177,14 +168,6 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="持有天数" prop="holdingDays">
-        <el-input-number
-          v-model="formData.holdingDays"
-          :min="0"
-          placeholder="请输入持有天数"
-        />
-      </el-form-item>
-
       <el-row :gutter="24">
         <el-col :span="12">
           <el-form-item label="买入日期" prop="buyDate">
@@ -210,6 +193,13 @@
         </el-col>
       </el-row>
     </el-form>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSubmit">确定</el-button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 
@@ -294,7 +284,30 @@ const createFormData = () => ({
   sellDate: null
 })
 
+const priceValidator = (rule, value, callback) => {
+  if (value <= 0) {
+    callback(new Error('价格必须大于0'))
+  } else {
+    callback()
+  }
+}
+
+const rules = {
+  stockName: [{ required: true, message: '请输入股票名称', trigger: 'blur' }],
+  stockCode: [{ required: true, message: '请输入股票代码', trigger: 'blur' }],
+  buyPrice: [{ required: true, validator: priceValidator, trigger: 'blur' }],
+  sellPrice: [{ required: true, validator: priceValidator, trigger: 'blur' }],
+  buyDate: [{ required: true, message: '请选择买入日期', trigger: 'blur' }],
+  sellDate: [{ required: true, message: '请选择卖出日期', trigger: 'blur' }]
+}
+
 const formData = reactive(createFormData())
+
+const handleSubmit = () => {
+  formRef.value.validate((valid) => {
+    console.log(valid)
+  })
+}
 
 // 监听dialogVisible变化，重置表单
 watch(
