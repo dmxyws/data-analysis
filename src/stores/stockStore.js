@@ -10,14 +10,42 @@ export const useStockStore = defineStore(
     // 获取所有股票
     const getAllStocks = () => stocks.value
 
-    // 添加股票
+    // 添加单支股票
     const addStock = (stockData) => {
+      const newId =
+        stocks.value.length > 0
+          ? stocks.value[stocks.value.length - 1].id + 1
+          : 1
+
       const newStock = {
-        id: stocks.length > 0 ? this.stocks[stocks.length - 1].id + 1 : 1,
+        id: newId,
         ...stockData
       }
+
       stocks.value.push(newStock)
       return newStock
+    }
+
+    // 批量添加股票
+    const addStocks = (stockList) => {
+      if (!Array.isArray(stockList) || stockList.length === 0) {
+        return []
+      }
+
+      // 计算新的起始ID
+      const lastId =
+        stocks.value.length > 0 ? stocks.value[stocks.value.length - 1].id : 0
+
+      // 为每支股票分配ID并添加
+      const newStocks = stockList.map((stock, index) => {
+        return {
+          id: lastId + index + 1,
+          ...stock
+        }
+      })
+
+      stocks.value = [...stocks.value, ...newStocks]
+      return newStocks
     }
 
     // 根据ID修改股票
@@ -47,6 +75,7 @@ export const useStockStore = defineStore(
       stocks,
       getAllStocks,
       addStock,
+      addStocks,
       updateStockById,
       deleteStockById
     }
