@@ -8,12 +8,12 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: () => import('../views/home/index.vue') // 首页组件
+    component: () => import('@/views/home/index.vue') // 首页组件
   },
   {
     path: '/:pathMatch(.*)*', // 匹配所有未定义的路由
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue') // 404页
+    component: () => import('@/views/NotFound.vue') // 404页
   }
 ]
 
