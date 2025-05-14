@@ -305,7 +305,17 @@ const formData = reactive(createFormData())
 
 const handleSubmit = () => {
   formRef.value.validate((valid) => {
-    console.log(valid)
+    if (valid) {
+      if (props.dialogType === 'add') {
+        stockStore.addStock(formData)
+        ElMessage({ message: '新增成功', type: 'success' })
+        dialogVisible.value = false
+      } else {
+        stockStore.updateStockById(props.stockId, formData)
+        ElMessage({ message: '编辑成功', type: 'success' })
+        dialogVisible.value = false
+      }
+    }
   })
 }
 
