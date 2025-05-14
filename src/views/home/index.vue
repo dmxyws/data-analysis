@@ -1,7 +1,7 @@
 <template>
   <div class="stock-table-container">
     <el-table
-      :data="tableData"
+      :data="stocks"
       border
       stripe
       fit
@@ -91,12 +91,24 @@
       <el-table-column prop="holdingDays" label="持有天数" width="100" />
       <el-table-column prop="buyDate" label="买入日期" width="120" />
       <el-table-column prop="sellDate" label="卖出日期" width="120" />
+
+      <el-table-column label="操作" width="160" fixed="right">
+        <template #default="{ row }">
+          <el-button size="mini" type="primary" @click="handleEdit(row)">
+            编辑
+          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row.id)">
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useStockStore } from '@/stores/stockStore.js'
 import {
   useKLineTypes,
   usePriceChanges,
@@ -110,6 +122,12 @@ import {
   useMovingAverages
 } from './useStockFormatters.js'
 
+// 获取股票store
+const stockStore = useStockStore()
+
+// 从store获取股票数据
+const stocks = computed(() => stockStore.getAllStocks())
+
 // 从hooks获取格式化函数
 const { formatKLineType } = useKLineTypes()
 const { formatPriceChange } = usePriceChanges()
@@ -122,76 +140,54 @@ const { formatPriceFluctuation } = usePriceFluctuations()
 const { formatHistoricalPrice } = useHistoricalPrices()
 const { formatMovingAverage } = useMovingAverages()
 
-// 表格数据
-const tableData = ref([
-  {
-    id: 1,
-    stockName: '上证指数',
-    stockCode: '000001',
-    buyPrice: 3250.56,
-    sellPrice: 3280.78,
-    profitRate: 0.93,
-    kLineType: 2,
-    priceChange: 2,
-    yesterdayVolume: 1,
-    todayVolume: 2,
-    volumeRatio: 3,
-    trendType: 2,
-    intradayTrend: 3,
-    priceFluctuation: 2,
-    historicalPrice: 2,
-    movingAverage: 3,
-    buyDate: '2023-06-15',
-    sellDate: '2023-06-20',
-    holdingDays: 5
-  },
-  {
-    id: 2,
-    stockName: '深证成指',
-    stockCode: '399001',
-    buyPrice: 11058.63,
-    sellPrice: 11123.96,
-    profitRate: 0.59,
-    kLineType: 1,
-    priceChange: 1,
-    yesterdayVolume: 2,
-    todayVolume: 1,
-    volumeRatio: 2,
-    trendType: 1,
-    intradayTrend: 1,
-    priceFluctuation: 3,
-    historicalPrice: 1,
-    movingAverage: 2,
-    buyDate: '2023-06-15',
-    sellDate: '2023-06-20',
-    holdingDays: 5
-  },
-  {
-    id: 3,
-    stockName: '创业板指',
-    stockCode: '399006',
-    buyPrice: 2284.3,
-    sellPrice: 2293.67,
-    profitRate: 0.41,
-    kLineType: 3,
-    priceChange: 1,
-    yesterdayVolume: 1,
-    todayVolume: 1,
-    volumeRatio: 1,
-    trendType: 3,
-    intradayTrend: 4,
-    priceFluctuation: 2,
-    historicalPrice: 1,
-    movingAverage: 1,
-    buyDate: '2023-06-15',
-    sellDate: '2023-06-20',
-    holdingDays: 5
-  }
-])
+// 编辑股票
+const handleEdit = (stock) => {
+  console.log('编辑股票:', stock)
+  // 这里可以打开编辑对话框
+}
 
-// 模拟异步获取数据
+// 删除股票
+const handleDelete = (id) => {
+  if (confirm('确定要删除这支股票吗？')) {
+    const result = stockStore.deleteStockById(id)
+    if (result) {
+      console.log('删除成功')
+    } else {
+      console.log('删除失败，股票不存在')
+    }
+  }
+}
+
+// 初始化数据
 onMounted(() => {
-  console.log('表格数据加载完成')
+  // 如果store中没有数据，添加一些示例数据
+  if (stocks.value.length === 0) {
+    const exampleStocks = [
+      {
+        stockName: '上证指数',
+        stockCode: '000001',
+        buyPrice: 3250.56,
+        sellPrice: 3280.78,
+        profitRate: 0.93,
+        kLineType: 2,
+        priceChange: 2,
+        yesterdayVolume: 1,
+        todayVolume: 2,
+        volumeRatio: 3,
+        trendType: 2,
+        intradayTrend: 3,
+        priceFluctuation: 2,
+        historicalPrice: 2,
+        movingAverage: 3,
+        buyDate: '2023-06-15',
+        sellDate: '2023-06-20',
+        holdingDays: 5
+      }
+      // 其他示例数据...
+    ]
+
+    stockStore.addStocks(exampleStocks) // 使用批量添加方法
+  }
 })
 </script>
 
@@ -200,7 +196,6 @@ onMounted(() => {
   padding: 20px;
 
   .el-table {
-    // 自定义表格样式
     --el-table-header-bg-color: #f5f7fa;
     --el-table-row-hover-bg-color: #fafafa;
 
@@ -208,15 +203,6 @@ onMounted(() => {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    // 为不同状态的单元格添加样式
-    .high-profit {
-      color: #f56c6c; // 红色表示高收益
-    }
-
-    .low-profit {
-      color: #67c23a; // 绿色表示低收益
     }
   }
 }
