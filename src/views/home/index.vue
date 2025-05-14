@@ -178,14 +178,16 @@ const showDialog = (type, id = 0) => {
 
 // 删除股票
 const handleDelete = (id) => {
-  if (confirm('确定要删除这支股票吗？')) {
-    const result = stockStore.deleteStockById(id)
-    if (result) {
-      console.log('删除成功')
-    } else {
-      console.log('删除失败，股票不存在')
-    }
-  }
+  ElMessageBox.confirm('确定要删除这支股票吗？', '删除确认', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      stockStore.deleteStockById(id)
+      ElMessage({ type: 'success', message: '删除成功' })
+    })
+    .catch(console.log)
 }
 
 // 初始化数据
