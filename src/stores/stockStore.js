@@ -23,8 +23,8 @@ export const useStockStore = defineStore(
           : 1
 
       const newStock = {
-        id: newId,
-        ...stockData
+        ...stockData,
+        id: newId
       }
 
       stocks.value.push(newStock)
@@ -44,8 +44,8 @@ export const useStockStore = defineStore(
       // 为每支股票分配ID并添加
       const newStocks = stockList.map((stock, index) => {
         return {
-          id: lastId + index + 1,
-          ...stock
+          ...stock,
+          id: lastId + index + 1
         }
       })
 
