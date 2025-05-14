@@ -272,7 +272,7 @@ const { movingAverages } = useMovingAverages()
 
 const formRef = ref()
 
-const formData = reactive({
+const createFormData = () => ({
   id: null,
   stockName: '',
   stockCode: '',
@@ -294,6 +294,8 @@ const formData = reactive({
   sellDate: null
 })
 
+const formData = reactive(createFormData())
+
 // 监听dialogVisible变化，重置表单
 watch(
   () => props.visible,
@@ -301,6 +303,8 @@ watch(
     if (!newVal) {
       // 关闭对话框时重置表单
       formRef.value?.resetFields()
+    } else if (props.dialogType === 'add') {
+      Object.assign(formData, createFormData())
     } else if (props.dialogType === 'edit') {
       const stock = stockStore.getStockById(props.stockId)
       if (stock) {
