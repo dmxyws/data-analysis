@@ -10,6 +10,11 @@ export const useStockStore = defineStore(
     // 获取所有股票
     const getAllStocks = () => stocks.value
 
+    // 根据ID获取单支股票
+    const getStockById = (id) => {
+      return stocks.value.find((stock) => stock.id === id) || null
+    }
+
     // 添加单支股票
     const addStock = (stockData) => {
       const newId =
@@ -74,6 +79,7 @@ export const useStockStore = defineStore(
     return {
       stocks,
       getAllStocks,
+      getStockById,
       addStock,
       addStocks,
       updateStockById,

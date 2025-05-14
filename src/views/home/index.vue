@@ -1,12 +1,20 @@
 <template>
   <div class="stock-table-container">
+    <el-button
+      type="primary"
+      @click="showDialog('add')"
+      style="margin-left: 20px"
+    >
+      新增
+    </el-button>
+
     <el-table
       :data="stocks"
       border
       stripe
       fit
       highlight-current-row
-      style="width: 100%"
+      style="width: 100%; margin-top: 20px"
     >
       <el-table-column prop="id" label="序号" width="80" />
       <el-table-column prop="stockName" label="股票名称" width="120" />
@@ -94,16 +102,31 @@
 
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row }">
-          <el-button size="mini" type="primary" @click="handleEdit(row)">
+          <el-button
+            size="small"
+            type="primary"
+            @click="showDialog('edit', row.id)"
+          >
             编辑
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row.id)">
+          <el-button
+            size="small"
+            type="danger"
+            @click="handleDelete(row.id)"
+            style="margin-left: 5px"
+          >
             删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
+
+  <FormDialog
+    v-model:visible="dialogVisible"
+    :dialogType="dialogType"
+    :stockId="stockId"
+  />
 </template>
 
 <script setup>
@@ -121,6 +144,7 @@ import {
   useHistoricalPrices,
   useMovingAverages
 } from './useStockFormatters.js'
+import FormDialog from './components/formDialog.vue'
 
 // 获取股票store
 const stockStore = useStockStore()
@@ -140,10 +164,16 @@ const { formatPriceFluctuation } = usePriceFluctuations()
 const { formatHistoricalPrice } = useHistoricalPrices()
 const { formatMovingAverage } = useMovingAverages()
 
-// 编辑股票
-const handleEdit = (stock) => {
-  console.log('编辑股票:', stock)
-  // 这里可以打开编辑对话框
+// 对话框状态
+const dialogVisible = ref(false)
+const dialogType = ref('add')
+const stockId = ref(0)
+
+// 显示对话框
+const showDialog = (type, id = 0) => {
+  dialogType.value = type
+  stockId.value = id
+  dialogVisible.value = true
 }
 
 // 删除股票
@@ -179,13 +209,31 @@ onMounted(() => {
         priceFluctuation: 2,
         historicalPrice: 2,
         movingAverage: 3,
+        holdingDays: 5,
         buyDate: '2023-06-15',
-        sellDate: '2023-06-20',
-        holdingDays: 5
+        sellDate: '2023-06-20'
+      },
+      {
+        stockName: '深证成指',
+        stockCode: '399001',
+        buyPrice: 11058.63,
+        sellPrice: 11123.96,
+        profitRate: 0.59,
+        kLineType: 1,
+        priceChange: 1,
+        yesterdayVolume: 2,
+        todayVolume: 1,
+        volumeRatio: 2,
+        trendType: 1,
+        intradayTrend: 1,
+        priceFluctuation: 3,
+        historicalPrice: 1,
+        movingAverage: 2,
+        holdingDays: 5,
+        buyDate: '2023-06-15',
+        sellDate: '2023-06-20'
       }
-      // 其他示例数据...
     ]
-
     stockStore.addStocks(exampleStocks) // 使用批量添加方法
   }
 })
