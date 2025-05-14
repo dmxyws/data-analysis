@@ -1,15 +1,182 @@
 <template>
   <div class="stock-table-container">
-    <el-button
-      type="primary"
-      @click="showDialog('add')"
-      style="margin-left: 20px"
-    >
-      新增
-    </el-button>
+    <!-- 查询表单 -->
+    <el-form :model="searchForm" label-width="100px" class="search-form">
+      <el-row :gutter="24">
+        <el-col :span="4">
+          <el-form-item label="K线类型">
+            <el-select
+              v-model="searchForm.kLineType"
+              placeholder="请选择K线类型"
+            >
+              <el-option
+                v-for="item in kLineTypes"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="涨幅">
+            <el-select
+              v-model="searchForm.priceChange"
+              placeholder="请选择涨幅"
+            >
+              <el-option
+                v-for="item in priceChanges"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="昨日量能">
+            <el-select
+              v-model="searchForm.yesterdayVolume"
+              placeholder="请选择昨日量能"
+            >
+              <el-option
+                v-for="item in yesterdayVolumes"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="今日量能">
+            <el-select
+              v-model="searchForm.todayVolume"
+              placeholder="请选择今日量能"
+            >
+              <el-option
+                v-for="item in todayVolumes"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="量比">
+            <el-select
+              v-model="searchForm.volumeRatio"
+              placeholder="请选择量比"
+            >
+              <el-option
+                v-for="item in volumeRatios"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="走势类型">
+            <el-select
+              v-model="searchForm.trendType"
+              placeholder="请选择走势类型"
+            >
+              <el-option
+                v-for="item in trendTypes"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="分时走势">
+            <el-select
+              v-model="searchForm.intradayTrend"
+              placeholder="请选择分时走势"
+            >
+              <el-option
+                v-for="item in intradayTrends"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="价格波动">
+            <el-select
+              v-model="searchForm.priceFluctuation"
+              placeholder="请选择价格波动"
+            >
+              <el-option
+                v-for="item in priceFluctuations"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="历史价位">
+            <el-select
+              v-model="searchForm.historicalPrice"
+              placeholder="请选择历史价位"
+            >
+              <el-option
+                v-for="item in historicalPrices"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="4">
+          <el-form-item label="均线系统">
+            <el-select
+              v-model="searchForm.movingAverage"
+              placeholder="请选择均线系统"
+            >
+              <el-option
+                v-for="item in movingAverages"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="6" style="text-align: right">
+          <el-form-item label="">
+            <el-button type="primary" @click="handleSearch"> 查询 </el-button>
+            <el-button @click="handleReset"> 重置 </el-button>
+            <el-button type="primary" @click="showDialog('add')">
+              新增
+            </el-button>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
 
     <el-table
-      :data="stocks"
+      :data="tableData"
       border
       stripe
       fit
@@ -130,7 +297,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useStockStore } from '@/stores/stockStore.js'
 import {
   useKLineTypes,
@@ -145,6 +312,7 @@ import {
   useMovingAverages
 } from './useStockFormatters.js'
 import FormDialog from './components/formDialog.vue'
+import { filterArrayByForm } from '@/utils/arrayUtils.js'
 
 // 获取股票store
 const stockStore = useStockStore()
@@ -152,17 +320,44 @@ const stockStore = useStockStore()
 // 从store获取股票数据
 const stocks = computed(() => stockStore.getAllStocks())
 
+const tableData = ref([])
+
 // 从hooks获取格式化函数
-const { formatKLineType } = useKLineTypes()
-const { formatPriceChange } = usePriceChanges()
-const { formatYesterdayVolume } = useYesterdayVolumes()
-const { formatTodayVolume } = useTodayVolumes()
-const { formatVolumeRatio } = useVolumeRatios()
-const { formatTrendType } = useTrendTypes()
-const { formatIntradayTrend } = useIntradayTrends()
-const { formatPriceFluctuation } = usePriceFluctuations()
-const { formatHistoricalPrice } = useHistoricalPrices()
-const { formatMovingAverage } = useMovingAverages()
+const { kLineTypes, formatKLineType } = useKLineTypes()
+const { priceChanges, formatPriceChange } = usePriceChanges()
+const { yesterdayVolumes, formatYesterdayVolume } = useYesterdayVolumes()
+const { todayVolumes, formatTodayVolume } = useTodayVolumes()
+const { volumeRatios, formatVolumeRatio } = useVolumeRatios()
+const { trendTypes, formatTrendType } = useTrendTypes()
+const { intradayTrends, formatIntradayTrend } = useIntradayTrends()
+const { priceFluctuations, formatPriceFluctuation } = usePriceFluctuations()
+const { historicalPrices, formatHistoricalPrice } = useHistoricalPrices()
+const { movingAverages, formatMovingAverage } = useMovingAverages()
+
+const createFormData = () => ({
+  kLineType: null,
+  priceChange: null,
+  yesterdayVolume: null,
+  todayVolume: null,
+  volumeRatio: null,
+  trendType: null,
+  intradayTrend: null,
+  priceFluctuation: null,
+  historicalPrice: null,
+  movingAverage: null
+})
+
+// 查询表单数据
+const searchForm = reactive(createFormData())
+
+const handleSearch = () => {
+  tableData.value = filterArrayByForm(stocks.value, searchForm)
+}
+
+const handleReset = () => {
+  Object.assign(searchForm, createFormData())
+  handleSearch()
+}
 
 // 对话框状态
 const dialogVisible = ref(false)
@@ -193,51 +388,53 @@ const handleDelete = (id) => {
 // 初始化数据
 onMounted(() => {
   // 如果store中没有数据，添加一些示例数据
-  if (stocks.value.length === 0) {
-    const exampleStocks = [
-      {
-        stockName: '上证指数',
-        stockCode: '000001',
-        buyPrice: 3250.56,
-        sellPrice: 3280.78,
-        profitRate: 0.93,
-        kLineType: 2,
-        priceChange: 2,
-        yesterdayVolume: 1,
-        todayVolume: 2,
-        volumeRatio: 3,
-        trendType: 2,
-        intradayTrend: 3,
-        priceFluctuation: 2,
-        historicalPrice: 2,
-        movingAverage: 3,
-        holdingDays: 5,
-        buyDate: '2023-06-15',
-        sellDate: '2023-06-20'
-      },
-      {
-        stockName: '深证成指',
-        stockCode: '399001',
-        buyPrice: 11058.63,
-        sellPrice: 11123.96,
-        profitRate: 0.59,
-        kLineType: 1,
-        priceChange: 1,
-        yesterdayVolume: 2,
-        todayVolume: 1,
-        volumeRatio: 2,
-        trendType: 1,
-        intradayTrend: 1,
-        priceFluctuation: 3,
-        historicalPrice: 1,
-        movingAverage: 2,
-        holdingDays: 5,
-        buyDate: '2023-06-15',
-        sellDate: '2023-06-20'
-      }
-    ]
-    stockStore.addStocks(exampleStocks) // 使用批量添加方法
-  }
+  // if (stocks.value.length === 0) {
+  //   const exampleStocks = [
+  //     {
+  //       stockName: '上证指数',
+  //       stockCode: '000001',
+  //       buyPrice: 3250.56,
+  //       sellPrice: 3280.78,
+  //       profitRate: 0.93,
+  //       kLineType: 2,
+  //       priceChange: 2,
+  //       yesterdayVolume: 1,
+  //       todayVolume: 2,
+  //       volumeRatio: 3,
+  //       trendType: 2,
+  //       intradayTrend: 3,
+  //       priceFluctuation: 2,
+  //       historicalPrice: 2,
+  //       movingAverage: 3,
+  //       holdingDays: 5,
+  //       buyDate: '2023-06-15',
+  //       sellDate: '2023-06-20'
+  //     },
+  //     {
+  //       stockName: '深证成指',
+  //       stockCode: '399001',
+  //       buyPrice: 11058.63,
+  //       sellPrice: 11123.96,
+  //       profitRate: 0.59,
+  //       kLineType: 1,
+  //       priceChange: 1,
+  //       yesterdayVolume: 2,
+  //       todayVolume: 1,
+  //       volumeRatio: 2,
+  //       trendType: 1,
+  //       intradayTrend: 1,
+  //       priceFluctuation: 3,
+  //       historicalPrice: 1,
+  //       movingAverage: 2,
+  //       holdingDays: 5,
+  //       buyDate: '2023-06-15',
+  //       sellDate: '2023-06-20'
+  //     }
+  //   ]
+  //   stockStore.addStocks(exampleStocks) // 使用批量添加方法
+  // }
+
+  handleSearch()
 })
 </script>
 
