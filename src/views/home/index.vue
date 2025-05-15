@@ -382,6 +382,7 @@ const handleDelete = (id) => {
     .then(() => {
       stockStore.deleteStockById(id)
       ElMessage({ type: 'success', message: '删除成功' })
+      handleSearch()
     })
     .catch(console.log)
 }
