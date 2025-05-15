@@ -165,8 +165,8 @@
 
         <el-col :span="6" style="text-align: right">
           <el-form-item label="">
-            <el-button type="primary" @click="handleSearch"> 查询 </el-button>
-            <el-button @click="handleReset"> 重置 </el-button>
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button @click="handleReset">重置</el-button>
             <el-button type="primary" @click="showDialog('add')">
               新增
             </el-button>
@@ -293,6 +293,7 @@
     v-model:visible="dialogVisible"
     :dialogType="dialogType"
     :stockId="stockId"
+    @onSuccess="handleSearch"
   />
 </template>
 

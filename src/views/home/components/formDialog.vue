@@ -234,7 +234,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['update:visible'])
+const emits = defineEmits(['update:visible', 'onSuccess'])
 
 // 使用计算属性双向绑定visible
 const dialogVisible = computed({
@@ -309,10 +309,12 @@ const handleSubmit = () => {
       if (props.dialogType === 'add') {
         stockStore.addStock(formData)
         ElMessage({ message: '新增成功', type: 'success' })
+        emits('onSuccess')
         dialogVisible.value = false
       } else {
         stockStore.updateStockById(props.stockId, formData)
         ElMessage({ message: '编辑成功', type: 'success' })
+        emits('onSuccess')
         dialogVisible.value = false
       }
     }
