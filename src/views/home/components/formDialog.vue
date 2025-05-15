@@ -306,6 +306,18 @@ const formData = reactive(createFormData())
 const handleSubmit = () => {
   formRef.value.validate((valid) => {
     if (valid) {
+      // 计算收益率
+      formData.profitRate = (
+        ((formData.sellPrice - formData.buyPrice) / formData.buyPrice) *
+        100
+      ).toFixed(2)
+
+      // 计算持有天数
+      const buyDate = new Date(formData.buyDate)
+      const sellDate = new Date(formData.sellDate)
+      const diffTime = Math.abs(sellDate - buyDate)
+      formData.holdingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
       if (props.dialogType === 'add') {
         stockStore.addStock(formData)
         ElMessage({ message: '新增成功', type: 'success' })
