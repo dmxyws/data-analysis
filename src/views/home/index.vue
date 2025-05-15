@@ -170,6 +170,9 @@
             <el-button type="primary" @click="showDialog('add')">
               新增
             </el-button>
+            <el-button type="primary" @click="handleExportJson">
+              导出JSON
+            </el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -313,7 +316,7 @@ import {
   useMovingAverages
 } from './useStockFormatters.js'
 import FormDialog from './components/formDialog.vue'
-import { filterArrayByForm } from '@/utils/arrayUtils.js'
+import { filterArrayByForm, exportArrayToJson } from '@/utils/arrayUtils.js'
 
 // 获取股票store
 const stockStore = useStockStore()
@@ -358,6 +361,10 @@ const handleSearch = () => {
 const handleReset = () => {
   Object.assign(searchForm, createFormData())
   handleSearch()
+}
+
+const handleExportJson = () => {
+  exportArrayToJson(stocks.value)
 }
 
 // 对话框状态

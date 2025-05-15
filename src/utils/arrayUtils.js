@@ -50,3 +50,45 @@ export function filterArrayByForm(data, formData) {
     })
   })
 }
+
+/**
+ * 在浏览器环境中将JavaScript数组导出为JSON文件
+ *
+ * @param {Array} dataArray - 要导出的数组数据
+ * @param {string} [fileName="data.json"] - 导出的文件名
+ * @param {number} [indent=2] - JSON缩进空格数
+ *
+ * @throws {TypeError} - 当dataArray不是数组时抛出
+ */
+export function exportArrayToJson(
+  dataArray,
+  fileName = 'data.json',
+  indent = 2
+) {
+  // 类型检查
+  if (!Array.isArray(dataArray)) {
+    throw new TypeError('dataArray必须是一个数组')
+  }
+
+  // 转换数组为JSON字符串
+  const jsonString = JSON.stringify(dataArray, null, indent)
+
+  // 创建Blob对象
+  const blob = new Blob([jsonString], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+
+  // 创建下载链接
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+
+  // 执行下载
+  document.body.appendChild(a)
+  a.click()
+
+  // 清理资源
+  setTimeout(() => {
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, 0)
+}
