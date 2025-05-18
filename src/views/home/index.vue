@@ -163,7 +163,7 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="6" style="text-align: right">
+        <el-col :span="8" style="text-align: right">
           <el-form-item label="">
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button @click="handleReset">重置</el-button>
@@ -172,6 +172,9 @@
             </el-button>
             <el-button type="primary" @click="handleExportJson">
               导出JSON
+            </el-button>
+            <el-button type="primary" @click="handleCombinationsRank">
+              数据分析
             </el-button>
           </el-form-item>
         </el-col>
@@ -317,6 +320,10 @@ import {
 } from './useStockFormatters.js'
 import FormDialog from './components/formDialog.vue'
 import { filterArrayByForm, exportArrayToJson } from '@/utils/arrayUtils.js'
+import {
+  analyzeIndicatorCombinations,
+  analyzeAllIndicators
+} from './stock_analysis.js'
 
 // 获取股票store
 const stockStore = useStockStore()
@@ -365,6 +372,13 @@ const handleReset = () => {
 
 const handleExportJson = () => {
   exportArrayToJson(stocks.value)
+}
+
+const handleCombinationsRank = () => {
+  const combinationsRank = analyzeIndicatorCombinations(tableData.value, 3) // 获取Top 3组合
+  const indicatorsRank = analyzeAllIndicators(tableData.value, 5) // 获取各指标Top 5类型
+  console.log('最常见的3种指标组合:', combinationsRank) // 在控制台输出最常见的3种指标组合
+  console.log('各指标Top 5类型:', indicatorsRank) // 在控制台输出各指标Top 5类型
 }
 
 // 对话框状态
