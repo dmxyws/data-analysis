@@ -7,6 +7,8 @@
         border
         style="width: 100%"
         highlight-current-row
+        show-summary
+        :summary-method="getSummaries"
       >
         <el-table-column type="index" label="排序" width="60">
         </el-table-column>
@@ -118,6 +120,60 @@ const handleAnalysis = () => {
   console.log('各指标Top 5类型:', indicatorsRank) // 在控制台输出各指标Top 5类型
 }
 
+// 自定义统计方法
+const getSummaries = (param) => {
+  const { columns, data } = param
+  const sums = []
+
+  columns.forEach((column, index) => {
+    if (index === 0) {
+      sums[index] = '统计'
+      return
+    } else if (['出现次数', '占比'].includes(column.label)) {
+      sums[index] = '-'
+      return
+    }
+
+    // 获取当前列对应的数据路径
+    const fieldPath = column.property
+    if (!fieldPath) {
+      sums[index] = ''
+      return
+    }
+
+    // 计算每个值的出现次数
+    const valueCounts = {}
+    let maxCount = 0
+    let mostFrequentValue = null
+
+    data.forEach((item) => {
+      // 支持嵌套路径获取值
+      const value = fieldPath
+        .split('.')
+        .reduce((obj, key) => obj && obj[key], item)
+      const valueStr = value !== undefined ? String(value) : 'undefined'
+
+      valueCounts[valueStr] = (valueCounts[valueStr] || 0) + 1
+
+      if (valueCounts[valueStr] > maxCount) {
+        maxCount = valueCounts[valueStr]
+        mostFrequentValue = valueStr
+      }
+    })
+
+    // 如果所有值都只出现一次，则显示"无重复值"
+    const uniqueValues = Object.keys(valueCounts).length
+    const result =
+      uniqueValues === data.length
+        ? '无重复值'
+        : `${mostFrequentValue} (${maxCount}次)`
+
+    sums[index] = result
+  })
+
+  return sums
+}
+
 watch(
   () => props.visible,
   (newValue) => {
@@ -128,8 +184,19 @@ watch(
 )
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .kline-data-container {
-  padding: 20px;
+  margin-bottom: 20px;
+
+  /* 自定义合计行样式 */
+  .el-table__footer-wrapper td {
+    font-weight: bold;
+    background-color: #f5f7fa;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
