@@ -1,8 +1,76 @@
 <template>
   <el-dialog title="数据分析" v-model="dialogVisible" width="90%">
-    <div>
-      <p>{{ combinationsRank }}</p>
-      <p>{{ indicatorsRank }}</p>
+    <div class="kline-data-container">
+      <el-table
+        :data="combinationsRank"
+        stripe
+        border
+        style="width: 100%"
+        highlight-current-row
+      >
+        <el-table-column type="index" label="排序" width="60">
+        </el-table-column>
+        <el-table-column
+          prop="combination.kLineType"
+          label="K线类型"
+          min-width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.priceChange"
+          label="价格变化"
+          min-width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.yesterdayVolume"
+          label="昨日成交量"
+          min-width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.todayVolume"
+          label="今日成交量"
+          min-width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.volumeRatio"
+          label="量比"
+          min-width="80"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.trendType"
+          label="趋势类型"
+          min-width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.intradayTrend"
+          label="日内趋势"
+          min-width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.priceFluctuation"
+          label="价格波动"
+          min-width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.historicalPrice"
+          label="历史价格位置"
+          min-width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="combination.movingAverage"
+          label="均线情况"
+          min-width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="count"
+          label="出现次数"
+          min-width="80"
+        ></el-table-column>
+        <el-table-column
+          prop="ratio"
+          label="占比"
+          min-width="80"
+        ></el-table-column>
+      </el-table>
     </div>
     <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
@@ -59,3 +127,9 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+.kline-data-container {
+  padding: 20px;
+}
+</style>
