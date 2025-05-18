@@ -173,7 +173,7 @@
             <el-button type="primary" @click="handleExportJson">
               导出JSON
             </el-button>
-            <el-button type="primary" @click="handleCombinationsRank">
+            <el-button type="primary" @click="handleStockAnalysis">
               数据分析
             </el-button>
           </el-form-item>
@@ -295,11 +295,18 @@
     </el-table>
   </div>
 
+  <!-- 新增/编辑弹框 -->
   <FormDialog
     v-model:visible="dialogVisible"
     :dialogType="dialogType"
     :stockId="stockId"
     @onSuccess="handleSearch"
+  />
+
+  <!-- 数据分析弹框 -->
+  <StockAnalysisDialog
+    v-model:visible="stockAnalysisVisible"
+    :dataSource="tableData"
   />
 </template>
 
@@ -320,10 +327,7 @@ import {
 } from './useStockFormatters.js'
 import FormDialog from './components/formDialog.vue'
 import { filterArrayByForm, exportArrayToJson } from '@/utils/arrayUtils.js'
-import {
-  analyzeIndicatorCombinations,
-  analyzeAllIndicators
-} from './stock_analysis.js'
+import StockAnalysisDialog from './components/stockAnalysisDialog.vue'
 
 // 获取股票store
 const stockStore = useStockStore()
@@ -374,11 +378,10 @@ const handleExportJson = () => {
   exportArrayToJson(stocks.value)
 }
 
-const handleCombinationsRank = () => {
-  const combinationsRank = analyzeIndicatorCombinations(tableData.value, 3) // 获取Top 3组合
-  const indicatorsRank = analyzeAllIndicators(tableData.value, 5) // 获取各指标Top 5类型
-  console.log('最常见的3种指标组合:', combinationsRank) // 在控制台输出最常见的3种指标组合
-  console.log('各指标Top 5类型:', indicatorsRank) // 在控制台输出各指标Top 5类型
+const stockAnalysisVisible = ref(false)
+
+const handleStockAnalysis = () => {
+  stockAnalysisVisible.value = true
 }
 
 // 对话框状态
