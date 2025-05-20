@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>每日双品销量排行榜</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+  <style>
+    #chart {
+      width: 900px;
+      height: 500px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="chart"></div>
+  <script>
+    // 每日固定两项数据（无需截取）
+    const rawData = [
+      { name: '星期一', items: [{ name: '牛肉', value: 180 }, { name: '羊肉', value: 150 }] },
+      { name: '星期二', items: [{ name: '南瓜', value: 220 }, { name: '苦瓜', value: 190 }] },
+      { name: '星期三', items: [{ name: '牛奶', value: 250 }, { name: '面包', value: 210 }] },
+      { name: '星期四', items: [{ name: '苹果', value: 300 }, { name: '香蕉', value: 280 }] },
+      { name: '星期五', items: [{ name: '大米', value: 170 }, { name: '面粉', value: 160 }] },
+      { name: '星期六', items: [{ name: 'T恤', value: 400 }, { name: '裤子', value: 350 }] },
+      { name: '星期日', items: [{ name: '牙膏', value: 230 }, { name: '洗发水', value: 200 }] }
+    ];
+
+    // 生成图表配置
+    function generateChartOption(data) {
+      const weeks = data.map(day => day.name);
+
+      return {
+        title: {
+          text: '每日双品销量排行榜',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis',
+          formatter: function (params) {
+            return `${params[0].axisValue}<br/>
+                                ${params[0].data.name}: ${params[0].data.value} 件<br/>
+                                ${params[1].data.name}: ${params[1].data.value} 件`;
+          }
+        },
+        // 隐藏图例（因商品名称直接显示在柱子上）
+        legend: { show: false },
+        xAxis: {
+          type: 'category',
+          data: weeks,
+          axisTick: { alignWithLabel: true },
+          axisLine: { onZero: false },
+          splitLine: { show: false },
+          axisLabel: { interval: 0 } // 强制显示所有星期
+        },
+        yAxis: {
+          type: 'value',
+          name: '销量（件）',
+          min: 0,
+          splitLine: { lineStyle: { type: 'dashed' } }
+        },
+        series: [
+          {
+            name: '商品1',
+            type: 'bar',
+            barWidth: '40%', // 占组宽度的40%（双柱总宽度80%，留20%间距）
+            data: data.map(day => day.items[0]), // 直接传递包含name/value的对象
+            label: {
+              show: true,
+              position: 'top',
+              formatter: '{b}\n{c}' // 显示商品名和销量
+            },
+            itemStyle: { color: '#409EFF' } // 蓝色
+          },
+          {
+            name: '商品2',
+            type: 'bar',
+            barWidth: '40%',
+            data: data.map(day => day.items[1]),
+            label: {
+              show: true,
+              position: 'top',
+              formatter: '{b}\n{c}'
+            },
+            itemStyle: { color: '#67C23A' } // 绿色
+          }
+        ],
+        grid: {
+          left: '5%',
+          right: '5%',
+          bottom: '8%',
+          containLabel: true
+        },
+        // 控制双柱间距（通过categoryGap和barWidth配合）
+        xAxis3D: { categoryGap: '20%' } // 类目间距控制柱组之间的间隔
+      };
+    }
+
+    // 初始化图表
+    const chart = echarts.init(document.getElementById('chart'));
+    chart.setOption(generateChartOption(rawData));
+  </script>
+</body>
+
+</html>
