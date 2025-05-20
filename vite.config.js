@@ -15,6 +15,9 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()]
     })
   ],
+  optimizeDeps: {
+    include: ['echarts'] // 强制预构建 ECharts
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src') // 将 @ 映射到 src 目录
