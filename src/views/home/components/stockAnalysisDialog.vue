@@ -123,9 +123,22 @@ const handleAnalysis = () => {
   chartData.value = convertData(indicatorsRank.value)
 }
 
+const combinations = {
+  kLineType: 'K线类型',
+  priceChange: '价格变化',
+  yesterdayVolume: '昨日成交量',
+  todayVolume: '今日成交量',
+  volumeRatio: '量比',
+  trendType: '趋势类型',
+  intradayTrend: '日内趋势',
+  priceFluctuation: '价格波动',
+  historicalPrice: '历史价格位置',
+  movingAverage: '均线情况'
+}
+
 const convertData = (sourceData) => {
   return Object.entries(sourceData).map(([category, items]) => ({
-    name: category,
+    name: combinations[category],
     items: items.map((item) => ({
       name: item.type,
       value: item.count
