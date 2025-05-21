@@ -10,8 +10,7 @@
         show-summary
         :summary-method="getSummaries"
       >
-        <el-table-column type="index" label="排序" width="60">
-        </el-table-column>
+        <el-table-column type="index" label="排序" width="60"></el-table-column>
         <el-table-column
           prop="combination.kLineType"
           label="K线类型"
@@ -74,6 +73,7 @@
         ></el-table-column>
       </el-table>
     </div>
+    <RankEcharts :chartData="chartData" />
     <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
       <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -83,6 +83,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import RankEcharts from './rankEcharts.vue'
 import {
   analyzeIndicatorCombinations,
   analyzeAllIndicators
@@ -113,11 +114,23 @@ const dialogVisible = computed({
 
 const combinationsRank = ref([])
 const indicatorsRank = ref([])
+const chartData = ref([])
 const handleAnalysis = () => {
   combinationsRank.value = analyzeIndicatorCombinations(props.dataSource, 3) // 获取Top 3组合
   indicatorsRank.value = analyzeAllIndicators(props.dataSource, 5) // 获取各指标Top 5类型
-  console.log('最常见的3种指标组合:', combinationsRank) // 在控制台输出最常见的3种指标组合
-  console.log('各指标Top 5类型:', indicatorsRank) // 在控制台输出各指标Top 5类型
+  // console.log('最常见的3种指标组合:', combinationsRank) // 在控制台输出最常见的3种指标组合
+  // console.log('各指标Top 5类型:', indicatorsRank) // 在控制台输出各指标Top 5类型
+  chartData.value = convertData(indicatorsRank.value)
+}
+
+const convertData = (sourceData) => {
+  return Object.entries(sourceData).map(([category, items]) => ({
+    name: category,
+    items: items.map((item) => ({
+      name: item.type,
+      value: item.count
+    }))
+  }))
 }
 
 // 自定义统计方法
