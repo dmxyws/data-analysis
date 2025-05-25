@@ -180,9 +180,10 @@ export const useIntradayTrends = () => {
 
 export const usePriceFluctuations = () => {
   const priceFluctuations = [
-    { key: 1, value: '剧烈震荡' },
+    { key: 1, value: '横盘整理' },
     { key: 2, value: '温和震荡' },
-    { key: 3, value: '横盘整理' }
+    { key: 3, value: '缓慢上涨' },
+    { key: 4, value: '剧烈震荡' }
   ]
 
   const keyToValueMap = new Map(
@@ -230,9 +231,10 @@ export const useHistoricalPrices = () => {
 
 export const useMovingAverages = () => {
   const movingAverages = [
-    { key: 1, value: '回踩55日均线' },
-    { key: 2, value: '55日均线压制' },
-    { key: 3, value: '上破55日均线' }
+    { key: 1, value: '上破55日均线' },
+    { key: 2, value: '回踩55日均线' },
+    { key: 3, value: '55日均线之上' },
+    { key: 4, value: '55日均线之下' }
   ]
 
   const keyToValueMap = new Map(
