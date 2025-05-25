@@ -183,6 +183,7 @@
 
     <el-table
       :data="tableData"
+      height="calc(100vh - 160px)"
       border
       stripe
       fit

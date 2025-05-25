@@ -2,7 +2,7 @@
   <el-dialog
     v-model="dialogVisible"
     :title="dialogType === 'add' ? '新增' : '编辑'"
-    width="600px"
+    width="740px"
   >
     <el-form ref="formRef" :model="formData" label-width="80px" :rules="rules">
       <el-row :gutter="24">
