@@ -3,7 +3,11 @@ export const useKLineTypes = () => {
   const kLineTypes = [
     { key: 1, value: '长上影线' },
     { key: 2, value: '先跌后涨阳线' },
-    { key: 3, value: '先跌后涨十字星' }
+    { key: 3, value: '先跌后涨十字星' },
+    { key: 4, value: '大阳线' },
+    { key: 5, value: '中阳线' },
+    { key: 6, value: '小阳线' },
+    { key: 7, value: '梭子线' }
   ]
 
   // 从 key 到 value 的映射
