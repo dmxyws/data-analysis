@@ -10,6 +10,7 @@
           <el-form-item label="股票名称" prop="stockName">
             <el-input
               v-model="formData.stockName"
+              ref="stockNameRef"
               placeholder="请输入股票名称"
             />
           </el-form-item>
@@ -19,6 +20,7 @@
             <el-input
               v-model="formData.stockCode"
               placeholder="请输入股票代码"
+              @keyup.enter="handleSubmit"
             />
           </el-form-item>
         </el-col>
@@ -261,6 +263,7 @@ const { historicalPrices } = useHistoricalPrices()
 const { movingAverages } = useMovingAverages()
 
 const formRef = ref()
+const stockNameRef = ref()
 
 const createFormData = () => ({
   id: null,
@@ -294,11 +297,11 @@ const priceValidator = (rule, value, callback) => {
 
 const rules = {
   stockName: [{ required: true, message: '请输入股票名称', trigger: 'blur' }],
-  stockCode: [{ required: true, message: '请输入股票代码', trigger: 'blur' }],
-  buyPrice: [{ required: true, validator: priceValidator, trigger: 'blur' }],
-  sellPrice: [{ required: true, validator: priceValidator, trigger: 'blur' }],
-  buyDate: [{ required: true, message: '请选择买入日期', trigger: 'blur' }],
-  sellDate: [{ required: true, message: '请选择卖出日期', trigger: 'blur' }]
+  stockCode: [{ required: true, message: '请输入股票代码', trigger: 'blur' }]
+  // buyPrice: [{ required: true, validator: priceValidator, trigger: 'blur' }],
+  // sellPrice: [{ required: true, validator: priceValidator, trigger: 'blur' }],
+  // buyDate: [{ required: true, message: '请选择买入日期', trigger: 'blur' }],
+  // sellDate: [{ required: true, message: '请选择卖出日期', trigger: 'blur' }]
 }
 
 const formData = reactive(createFormData())
@@ -342,6 +345,10 @@ watch(
       formRef.value?.resetFields()
     } else if (props.dialogType === 'add') {
       Object.assign(formData, createFormData())
+
+      setTimeout(() => {
+        stockNameRef.value.focus()
+      }, 0)
     } else if (props.dialogType === 'edit') {
       const stock = stockStore.getStockById(props.stockId)
       if (stock) {
